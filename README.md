@@ -3,7 +3,7 @@
 [![pipeline status](https://github.com/Smeagolworms4/freebox-gateway/actions/workflows/build_images.yml/badge.svg)](https://github.com/Smeagolworms4/freebox-gateway/actions/workflows/build_images.yml)
 
 Its Api proxy for freebox api without authentifacation.
-You can use with Home Assistant or orther
+You can use with Home Assistant or other
 
 ## Usage
 
@@ -30,3 +30,7 @@ API_BASE_URL=http://mafreebox.freebox.fr/api
 ## Docker hub
 
 https://hub.docker.com/r/smeagolworms4/freebox-gateway
+
+## Github
+
+https://github.com/Smeagolworms4/freebox-gateway
