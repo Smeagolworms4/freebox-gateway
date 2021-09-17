@@ -26,8 +26,6 @@ jobs:
         
       - name: Push readme
         run: |
-          DOCKERHUB_REPO_PREFIX=${GITHUB_REPOSITORY#/*}
           DOCKERHUB_REPO_NAME=${GITHUB_REPOSITORY#*/}
-          echo docker run --rm  -v $(pwd)/README.md:/data/README.md -e DOCKERHUB_USERNAME=${{ secrets.DOCKER_USERNAME }} -e DOCKERHUB_PASSWORD=${{ secrets.DOCKER_PASSWORD }} -e DOCKERHUB_REPO_PREFIX=$DOCKERHUB_REPO_PREFIX -e DOCKERHUB_REPO_NAME=$DOCKERHUB_REPO_NAME sheogorath/readme-to-dockerhub
-          docker run --rm  -v $(pwd)/README.md:/data/README.md -e DOCKERHUB_USERNAME=${{ secrets.DOCKER_USERNAME }} -e DOCKERHUB_PASSWORD=${{ secrets.DOCKER_PASSWORD }} -e DOCKERHUB_REPO_PREFIX=$DOCKERHUB_REPO_PREFIX -e DOCKERHUB_REPO_NAME=$DOCKERHUB_REPO_NAME sheogorath/readme-to-dockerhub
+          docker run --rm  -v $(pwd)/README.md:/data/README.md -e DOCKERHUB_USERNAME=${{ secrets.DOCKER_USERNAME }} -e DOCKERHUB_PASSWORD=${{ secrets.DOCKER_PASSWORD }} -e DOCKERHUB_REPO_PREFIX=${{ secrets.DOCKER_USERNAME }} -e DOCKERHUB_REPO_NAME=$DOCKERHUB_REPO_NAME sheogorath/readme-to-dockerhub
           
