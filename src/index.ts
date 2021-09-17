@@ -199,14 +199,6 @@ app.get('/', (req, res) => {
 });
 
 
-app.post('/password-generate', (req, res, next) => {
-	challenge = req.body.challenge;
-	res.json({
-		password: passwordGenerate(req.body.token),
-	});
-});
-
-
 app.get('/register', async (req, res, next) => {
 	try {
 		
@@ -233,16 +225,6 @@ app.get('/register', async (req, res, next) => {
 		
 		res.json({ success: true });
 		
-	} catch (e) {
-		errorHandler(e, req, res, next);
-	}
-});
-
-
-app.post('/player-status/:playerId', async (req, res, next) => {
-	try {
-		await login();
-		res.json(await request(`v6/player/${req.params.playerId}/api/v6/status/`));
 	} catch (e) {
 		errorHandler(e, req, res, next);
 	}

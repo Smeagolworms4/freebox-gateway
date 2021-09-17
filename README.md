@@ -2,7 +2,7 @@
 
 [![pipeline status](https://github.com/Smeagolworms4/freebox-gateway/actions/workflows/build_images.yml/badge.svg)](https://github.com/Smeagolworms4/freebox-gateway/actions/workflows/build_images.yml)
 
-It's api proxy for freebox api without authentifacation.
+It's Api proxy for freebox api without authentifacation.
 You can use with Home Assistant or other
 
 ## Usage
@@ -25,7 +25,27 @@ docker run -p 3333:3333 -v$(pwd)/config:/app/config smeagolworms4/freebox-gatewa
 ```
 HTTP_PORT=3333
 API_BASE_URL=http://mafreebox.freebox.fr/api
+APP_ID=fr.freebox_gateway
+APP_NAME="Freebox Gateway"
+APP_VERSION=1.0.0
+DEVICE_NAME="Freebox Gateway"
 ```
+
+
+## Register freebox app token
+
+Call with browser
+
+```
+http://127.0.0.1:3333/register
+```
+
+or curl
+
+```
+curl http://127.0.0.1:3333/register
+```
+
 
 ## Docker hub
 
