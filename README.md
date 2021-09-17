@@ -49,7 +49,7 @@ curl http://127.0.0.1:3333/register
 And valid on your freebox
 
 
-![Freebox validation](https://github.com/Smeagolworms4/freebox-gateway/blob/master/docs/config_freebox.png)
+![Freebox validation](https://raw.githubusercontent.com/Smeagolworms4/freebox-gateway/master/docs/config_freebox.png)
 
 
 ## Docker hub
