@@ -2,7 +2,7 @@
 
 [![pipeline status](https://github.com/Smeagolworms4/freebox-gateway/actions/workflows/build_images.yml/badge.svg)](https://github.com/Smeagolworms4/freebox-gateway/actions/workflows/build_images.yml)
 
-Its Api proxy for freebox api without authentifacation.
+It's api proxy for freebox api without authentifacation.
 You can use with Home Assistant or other
 
 ## Usage
