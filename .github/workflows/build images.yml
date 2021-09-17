@@ -68,6 +68,6 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/armv6,linux/armv7
+          platforms: linux/amd64,linux/arm/v6,linux/arm/v7
           push: true
           tags: ${{ steps.prep.outputs.tags }}
