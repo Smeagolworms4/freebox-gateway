@@ -185,7 +185,7 @@ const errorHandler = (err, req, res, next) => {
 	challenge = null;
 	console.error(err);
 	res.status(err.status || 500).json({
-		status: false,
+		success: false,
 		error: err.message || err.toString(),
 		...(err.stack ? { stack: err.stack } : {}),
 		...(err.response ? { response: err.response } : {}),
