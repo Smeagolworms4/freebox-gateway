@@ -46,6 +46,11 @@ or curl
 curl http://127.0.0.1:3333/register
 ```
 
+And valid on tour freebox
+
+
+![Freebox validation]((https://github.com/Smeagolworms4/freebox-gateway/master/docs/config_freebox.png)
+
 
 ## Docker hub
 
