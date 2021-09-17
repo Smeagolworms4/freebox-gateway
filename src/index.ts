@@ -97,7 +97,7 @@ class ResponseError extends StatusError {
 	}
 }
 
-const request = async (url: string, method: 'get'|'post'|'patch'|'put'|'delete' = 'get', body: any = null, headers: any = {}) => {
+const request = async (url: string, method: 'get'|'post'|'patch'|'put'|'delete' = 'get', body: any = null, headers: any = {}, retry = 0) => {
 	
 	const final = `${baseUrl}/${url}`;
 	const params = {
@@ -119,6 +119,13 @@ const request = async (url: string, method: 'get'|'post'|'patch'|'put'|'delete' 
 	const json = await reponse.json();
 	
 	if (!json.success) {
+		if (json.error_code === 'invalid_token' && retry < 1) {
+			console.log('Invalid token', token);
+			token = null;
+			await login();
+			return await request(url, method, body, headers, retry + 1);
+		}
+		
 		throw new ResponseError(json, reponse.status >= 3000 ? reponse.status : 400, 'Une errror est survenue');
 	}
 	if (json.result && json.result.challenge) {
