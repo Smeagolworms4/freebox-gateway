@@ -2,22 +2,76 @@ import express from "express";
 import morgan from "morgan";
 import bodyParser from "body-parser";
 import CryptoJS from "crypto-js";
+import minimist from 'minimist';
 import fs from 'fs';
 import path from 'path';
 import mkdirp from 'mkdirp';
 import fetch from 'node-fetch';
 
+const rawArgv = process.argv.slice(2);
+const args = minimist(rawArgv, {
+	string: [
+		'http-port',
+		'base-url',
+		'app-id',
+		'app-name',
+		'app-version',
+		'device-name',
+	],
+	boolean: [
+		'help',
+	],
+	alias: {
+		'http-port': 'p',
+		'base-url': 'u',
+		'app-id': 'i',
+		'app-name': 'n',
+		'app-version': 'v',
+		'device-name': 'd',
+		'help': 'h',
+	},
+	default: {
+		'http-port': '3333',
+		'base-url': 'http://mafreebox.freebox.fr/api',
+		'app-id': 'fr.freebox_gateway',
+		'app-name': 'Freebox Gateway',
+		'app-version': '1.0.0',
+		'device-name': 'Freebox Gateway',
+	}
+});
+
+if (args.h) {
+	
+	console.log(`
+Run command:
+    
+    ${process.argv[0]} ${process.argv[0]} [PARAMS]
+   
+Parameters:
+    
+    http-port, p      Set server http port (default: 3333)
+    base-url, u       Set api base url (default: http://mafreebox.freebox.fr/api) 
+    app-id, i         Set api app id (default: fr.freebox_gateway)   
+    app-name, n       Set api app name (default: Freebox Gateway)
+    app-version, v    Set api app version (default: 1.0.0)
+    device-name, d    Set api device name (default: Freebox Gateway)
+    help, h           Display help
+    
+	`);
+	process.exit(0);
+}
+
 
 const app = express();
-const port = isNaN(parseInt(process.argv[2], 10)) ? 3333 : parseInt(process.argv[2], 10);
+const port = isNaN(parseInt(args.p, 10)) ? 3333 : parseInt(args.p, 10);
 const pathVar = path.resolve('config');
 const pathTokenFile = path.resolve(pathVar, 'token.key');
-const baseUrl = process.argv[3] || 'http://mafreebox.freebox.fr/api';
+const baseUrl = args.u;
 const appInfos = {
-	app_id: "fr.freebox_gateway",
-	app_name: "Freebox Gateway",
-	app_version: "1.0.0",
-	device_name: "Freebox Gateway"
+	app_id: args.i,
+	app_name: args.n,
+	app_version: args.v,
+	device_name: args.d,
 };
 
 
@@ -61,10 +115,11 @@ const request = async (url: string, method: 'get'|'post'|'patch'|'put'|'delete' 
 	
 	console.log('CALL:', final, params);
 	
-	const json = await (await fetch(final, params)).json();
+	const reponse = await fetch(final, params);
+	const json = await reponse.json();
 	
 	if (!json.success) {
-		throw new ResponseError(json, 400, 'Une errror est survenue');
+		throw new ResponseError(json, reponse.status >= 3000 ? reponse.status : 400, 'Une errror est survenue');
 	}
 	if (json.result && json.result.challenge) {
 		challenge = json.result.challenge;
@@ -106,7 +161,7 @@ const login = async (retry = 0) => {
 		retry++;
 		console.log('Error login retry', retry);
 		if (retry < 4) {
-			await login();
+			await login(retry + 1);
 		} else {
 			throw e;
 		}
@@ -124,7 +179,7 @@ const errorHandler = (err, req, res, next) => {
 	res.status(err.status || 500).json({
 		error: err.message || err.toString(),
 		...(err.stack ? { stack: err.stack } : {}),
-		...(err.response ? { stack: err.response } : {}),
+		...(err.response ? { response: err.response } : {}),
 	});
 }
 
@@ -144,7 +199,7 @@ app.post('/password-generate', (req, res, next) => {
 });
 
 
-app.post('/register', async (req, res, next) => {
+app.get('/register', async (req, res, next) => {
 	try {
 		
 		const resultRequest = await request(`v8/login/authorize/`, 'post', appInfos);
@@ -183,8 +238,21 @@ app.post('/player-status/:playerId', async (req, res, next) => {
 	} catch (e) {
 		errorHandler(e, req, res, next);
 	}
-});	
+});
 
+
+app.use(async (req, res, next) => {
+	try {
+		console.log('Gateway url');
+		await login();
+		const url = req.url[0] === '/' ? req.url.substr(1) : req.url;
+		res.json(
+			await request(url, req.method as any, ['get', 'head'].indexOf(req.method.toLowerCase()) === -1 ? req.body : null, req.headers)
+		);
+	} catch (e) {
+		errorHandler(e, req, res, next);
+	}
+});
 
 app.use(errorHandler);
 
