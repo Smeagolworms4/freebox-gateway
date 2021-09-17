@@ -121,6 +121,7 @@ const request = async (url: string, method: 'get'|'post'|'patch'|'put'|'delete' 
 	if (!json.success) {
 		if (json.error_code === 'invalid_token' && retry < 1) {
 			console.log('Invalid token', token);
+			challenge = null;
 			token = null;
 			await login();
 			return await request(url, method, body, headers, retry + 1);
