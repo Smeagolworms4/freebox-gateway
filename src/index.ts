@@ -45,7 +45,7 @@ if (args.h) {
 	console.log(`
 Run command:
     
-    ${process.argv[0]} ${process.argv[0]} [PARAMS]
+    ${process.argv[0]} ${process.argv[1]} [PARAMS]
    
 Parameters:
     
@@ -97,7 +97,7 @@ class ResponseError extends StatusError {
 	}
 }
 
-const request = async (url: string, method: 'get'|'post'|'patch'|'put'|'delete' = 'get', body: any = null, headers: any = {}, retry = 0) => {
+const requestRaw = async (url: string, method: 'get'|'post'|'patch'|'put'|'delete' = 'get', body: any = null, headers: any = {}, retry = 0) => {
 	
 	const final = `${baseUrl}/${url}`;
 	const params = {
@@ -115,7 +115,12 @@ const request = async (url: string, method: 'get'|'post'|'patch'|'put'|'delete' 
 	
 	console.log('CALL:', final, params);
 	
-	const reponse = await fetch(final, params);
+	return await fetch(final, params);
+};
+
+const request = async (url: string, method: 'get'|'post'|'patch'|'put'|'delete' = 'get', body: any = null, headers: any = {}, retry = 0) => {
+	
+	const reponse = await requestRaw(url, method, body, headers, retry);
 	const json = await reponse.json();
 	
 	if (!json.success) {
@@ -226,6 +231,18 @@ app.get('/register', async (req, res, next) => {
 		
 		res.json({ success: true });
 		
+	} catch (e) {
+		errorHandler(e, req, res, next);
+	}
+});
+
+app.get('/:version/dl/:path', async (req, res, next) => {
+	try {
+		console.log('Gateway url rawArgv');
+		await login();
+		const url = req.url[0] === '/' ? req.url.substr(1) : req.url;
+		const response = await requestRaw(url, req.method as any, ['get', 'head'].indexOf(req.method.toLowerCase()) === -1 ? req.body : null, req.headers)
+		res.status(response.status).send(await response.buffer());
 	} catch (e) {
 		errorHandler(e, req, res, next);
 	}
